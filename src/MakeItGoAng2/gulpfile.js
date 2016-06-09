@@ -1,4 +1,5 @@
-﻿var ts = require('gulp-typescript');
+﻿/// <binding ProjectOpened='default' />
+var ts = require('gulp-typescript');
 var gulp = require('gulp');
 var clean = require('gulp-clean');
 

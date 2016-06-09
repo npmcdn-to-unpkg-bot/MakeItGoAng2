@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
+using MakeItGoAPI.Models;
+using MakeItGoAPI.Repository;
 
 namespace MakeItGoAPI
 {
@@ -28,7 +31,11 @@ namespace MakeItGoAPI
         public void ConfigureServices(IServiceCollection services)
         {
             // Add framework services.
-            services.AddMvc();
+            services.AddMvc();          var connection = @"Server=(localdb)\mssqllocaldb;Database=MakeItGo;Trusted_Connection=True;";
+            services.AddDbContext<DataContext>(options => options.UseSqlServer(connection));
+            services.AddTransient(typeof(BootstrapMvc.Mvc6.BootstrapHelper<>));
+
+            services.AddSingleton<DoctorRepository, DoctorRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -36,7 +43,13 @@ namespace MakeItGoAPI
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
-
+            loggerFactory
+    .WithFilter(new FilterLoggerSettings
+    {
+        { "Microsoft", LogLevel.Warning },
+        { "System", LogLevel.Warning },
+        { "ToDoApi", LogLevel.Debug }
+    });
             app.UseMvc();
         }
     }
